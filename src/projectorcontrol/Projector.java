@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author scott.walker
  */
- abstract class Projector {
+ public abstract class Projector {
 
     private static final String powerQuery  = "(PWR?)";
     private static final String powerOn     = "(PWR1)";
@@ -36,7 +36,6 @@ import java.util.logging.Logger;
         sc.closePort();
 
         String r2 = new String(response, 0, len, "US-ASCII");
-        System.out.println(r2);
         return "(0-1,1)".equals(r2);
     }
     

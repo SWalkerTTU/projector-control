@@ -35,7 +35,6 @@ public class ProjectorControl extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        projectorControlPanel1 = new projectorcontrol.ProjectorControlPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
         ctrlPanel = new projectorcontrol.ProjectorControlPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -115,27 +114,21 @@ public class ProjectorControl extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     activePort = sp2;
-                    System.out.println(activePort.toString());
                     proj.setSerialPort(sp2);
-                    boolean powerOn;
-                    powerOn = proj.readPower();
-                    
-                    System.out.println((powerOn) ? "On" : "Off");
-                    
+
                     Component[] panelParts = ctrlPanel.getComponents();
-                    javax.swing.JToggleButton pb;
+                    javax.swing.JToggleButton pb = new javax.swing.JToggleButton();
                     for (Component cmp : panelParts) {
-                        if (cmp instanceof javax.swing.JToggleButton) {
+                        if (cmp instanceof javax.swing.JToggleButton
+                                && "Power".equals(((javax.swing.JToggleButton) cmp).getText())) {
                             pb = (JToggleButton) cmp;
-                            
-                            if ("Power".equals(pb.getText())) {
-                              
-                                boolean p = pb.getModel().isPressed();
-                                System.out.println((p) ? "Pressed" : "Not Pressed");
-                                break;
-                            }
+                            break;
                         }
                     }
+                    
+                    boolean powerOn = proj.readPower();
+                    pb.setSelected(powerOn);
+                    pb.getModel().setPressed(powerOn);
                 }
             });
             portMenu.add(jmi);
@@ -170,11 +163,8 @@ public class ProjectorControl extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ProjectorControl().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ProjectorControl().setVisible(true);
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -184,8 +174,11 @@ public class ProjectorControl extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenu modelMenu;
     private javax.swing.JMenu portMenu;
-    private projectorcontrol.ProjectorControlPanel projectorControlPanel1;
     // End of variables declaration//GEN-END:variables
-    SerialPort activePort;
-    Projector proj;
+    private SerialPort activePort;
+    private final Projector proj;
+    
+    public Projector getProjector(){
+        return proj;
+    }
 }

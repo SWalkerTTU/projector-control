@@ -4,6 +4,9 @@
  */
 package projectorcontrol;
 
+import java.awt.Window;
+import javax.swing.SwingUtilities;
+
 /**
  *
  * @author scott.walker
@@ -64,7 +67,10 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void powerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerButtonActionPerformed
-
+        javax.swing.JToggleButton pb = (javax.swing.JToggleButton) evt.getSource();
+        boolean s = pb.getModel().isSelected();
+        Window windowAncestor = SwingUtilities.getWindowAncestor(powerButton);
+        ((ProjectorControl) windowAncestor).getProjector().writePower(s);        
     }//GEN-LAST:event_powerButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -73,5 +79,4 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToggleButton powerButton;
     // End of variables declaration//GEN-END:variables
-
 }
