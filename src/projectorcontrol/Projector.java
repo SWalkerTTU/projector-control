@@ -8,19 +8,24 @@ package projectorcontrol;
 import j.extensions.comm.SerialComm;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author scott.walker
  */
-public class Projector {
+ abstract class Projector {
 
-    private static final String powerQuery = "(PWR?)";
-    private static final String powerOn = "(PWR1)";
-    private static final String powerOff = "(PWR0)";
-    protected SerialPort activePort;
-
-    protected synchronized boolean readPower(SerialComm sc) throws UnsupportedEncodingException, IOException, InterruptedException {
+    private static final String powerQuery  = "(PWR?)";
+    private static final String powerOn     = "(PWR1)";
+    private static final String powerOff    = "(PWR0)";
+    private SerialPort activePort;
+    
+    abstract boolean readPower();
+    abstract void writePower(boolean state);
+    
+    private synchronized boolean readPower(SerialComm sc) throws UnsupportedEncodingException, IOException, InterruptedException {
         sc.openPort();
         sc.getOutputStream().write(powerQuery.getBytes("US-ASCII"));
         this.wait(80);
@@ -30,37 +35,50 @@ public class Projector {
         int len = sc.getInputStream().read(response, 0, response.length);
         sc.closePort();
 
-        String r2 = new String(response, "US-ASCII");
+        String r2 = new String(response, 0, len, "US-ASCII");
         System.out.println(r2);
         return "(0-1,1)".equals(r2);
     }
     
-    protected void writePower(SerialComm sc, boolean state) throws UnsupportedEncodingException, IOException{
+    private void writePower(SerialComm sc, boolean state) throws UnsupportedEncodingException, IOException{
         sc.openPort();
         String pwrCmd = (state) ? powerOn : powerOff;
         sc.getOutputStream().write(pwrCmd.getBytes("US-ASCII"));
+        sc.closePort();
     }
 
     abstract static class ProjectorType extends Projector {
 
         int bitRate, dataBits, stopBits, parity, flowControl;
 
-        public boolean readPower() throws IOException, UnsupportedEncodingException, InterruptedException {
-            SerialComm sc = activePort.getPort();
+        @Override
+        public boolean readPower(){
+            SerialComm sc = super.getSerialPort().getPort();
             sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
             sc.setFlowControl(flowControl);
-            return super.readPower(sc);
+            boolean powerState = false;
+            try {
+                powerState = super.readPower(sc);
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Projector.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return powerState;
         }
         
-        public void writePower(boolean state) throws IOException{
-            SerialComm sc = activePort.getPort();
+        @Override
+        public void writePower(boolean state){
+            SerialComm sc = super.getSerialPort().getPort();
             sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
             sc.setFlowControl(flowControl);
-            super.writePower(sc, state);
+            try {
+                super.writePower(sc, state);
+            } catch (IOException ex) {
+                Logger.getLogger(Projector.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
-    public static class IN2100Series extends ProjectorType {
+    public static final class IN2100Series extends ProjectorType {
 
         public IN2100Series() {
             bitRate = 115200;
@@ -75,4 +93,7 @@ public class Projector {
         activePort = ap;
     }
 
+    public SerialPort getSerialPort(){
+        return activePort;
+    }
 }

@@ -8,11 +8,7 @@ import j.extensions.comm.SerialComm;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
@@ -26,6 +22,7 @@ public class ProjectorControl extends javax.swing.JFrame {
      * Creates new form ProjectorControlFrame
      */
     public ProjectorControl() {
+        this.proj = new Projector.IN2100Series();
         initComponents();
     }
 
@@ -118,18 +115,10 @@ public class ProjectorControl extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     activePort = sp2;
-                    ctrlPanel.setActivePort(sp2);
                     System.out.println(activePort.toString());
+                    proj.setSerialPort(sp2);
                     boolean powerOn;
-                    try {
-                        powerOn = getPowerState(activePort);
-                    } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
-                        powerOn = false;
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
-                        powerOn = false;
-                    }
+                    powerOn = proj.readPower();
                     
                     System.out.println((powerOn) ? "On" : "Off");
                     
@@ -147,26 +136,6 @@ public class ProjectorControl extends javax.swing.JFrame {
                             }
                         }
                     }
-                }
-
-                private synchronized boolean getPowerState(SerialPort ap) throws UnsupportedEncodingException, IOException, InterruptedException {
-                    SerialComm sc = ap.getPort();
-
-                    sc.setComPortParameters(115200, 8, SerialComm.ONE_STOP_BIT, SerialComm.NO_PARITY);
-                    sc.setFlowControl(SerialComm.FLOW_CONTROL_DISABLED);
-                    sc.openPort();
-                    sc.getOutputStream().write("(PWR?)".getBytes("US-ASCII"));
-
-                    this.wait(80);
-                    int avail = sc.getInputStream().available();
-                    byte[] response = new byte[avail];
-
-                    int len = sc.getInputStream().read(response, 0, response.length);
-                    sc.closePort();
-
-                    String r2 = new String(response, "US-ASCII");
-                    System.out.println(r2);
-                    return "(0-1,1)".equals(r2);
                 }
             });
             portMenu.add(jmi);
@@ -218,5 +187,5 @@ public class ProjectorControl extends javax.swing.JFrame {
     private projectorcontrol.ProjectorControlPanel projectorControlPanel1;
     // End of variables declaration//GEN-END:variables
     SerialPort activePort;
-    Projector proj = new Projector.IN2100Series();
+    Projector proj;
 }

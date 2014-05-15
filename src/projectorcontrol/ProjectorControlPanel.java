@@ -64,9 +64,7 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void powerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerButtonActionPerformed
-        String state = evt.getActionCommand();
-        System.out.println(state);
-        writePowerState(powerButton.isSelected());
+
     }//GEN-LAST:event_powerButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -75,9 +73,5 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToggleButton powerButton;
     // End of variables declaration//GEN-END:variables
-
-    private void writePowerState(boolean selected) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
 }
