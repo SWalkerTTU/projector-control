@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -119,6 +118,7 @@ public class ProjectorControl extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     activePort = sp2;
+                    ctrlPanel.setActivePort(sp2);
                     System.out.println(activePort.toString());
                     boolean powerOn;
                     try {
@@ -131,13 +131,20 @@ public class ProjectorControl extends javax.swing.JFrame {
                         powerOn = false;
                     }
                     
+                    System.out.println((powerOn) ? "On" : "Off");
+                    
                     Component[] panelParts = ctrlPanel.getComponents();
                     javax.swing.JToggleButton pb;
                     for (Component cmp : panelParts) {
-                        if (cmp instanceof javax.swing.JToggleButton && "Power".equals(cmp.getName())) {
+                        if (cmp instanceof javax.swing.JToggleButton) {
                             pb = (JToggleButton) cmp;
-                            pb.getModel().setPressed(powerOn);
-                            break;
+                            
+                            if ("Power".equals(pb.getText())) {
+                              
+                                boolean p = pb.getModel().isPressed();
+                                System.out.println((p) ? "Pressed" : "Not Pressed");
+                                break;
+                            }
                         }
                     }
                 }
@@ -211,4 +218,5 @@ public class ProjectorControl extends javax.swing.JFrame {
     private projectorcontrol.ProjectorControlPanel projectorControlPanel1;
     // End of variables declaration//GEN-END:variables
     SerialPort activePort;
+    Projector proj = new Projector.IN2100Series();
 }
