@@ -37,8 +37,6 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
 
-        setPreferredSize(new java.awt.Dimension(180, 90));
-
         powerButton.setText("Power");
         powerButton.setToolTipText("");
         powerButton.addActionListener(new java.awt.event.ActionListener() {
