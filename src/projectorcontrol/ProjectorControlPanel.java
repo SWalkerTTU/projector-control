@@ -5,6 +5,9 @@
 package projectorcontrol;
 
 import java.awt.Window;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 /**
@@ -12,6 +15,7 @@ import javax.swing.SwingUtilities;
  * @author scott.walker
  */
 public class ProjectorControlPanel extends javax.swing.JPanel {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form ProjectorControlPanel
@@ -32,7 +36,11 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
+        jSpinner1 = new javax.swing.JSpinner();
         powerButton = new javax.swing.JToggleButton();
+        aspectComboBox = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -48,20 +56,43 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
             }
         });
 
+        aspectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Auto", "Native", "4:3", "16:9", "Letterbox", "Panorama", "Full Screen" }));
+        aspectComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aspectComboBoxActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Aspect Ratio:");
+
+        jLabel2.setText("Power:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(powerButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(powerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(aspectComboBox, 0, 80, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(powerButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(powerButton)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(aspectComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -70,13 +101,25 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
         javax.swing.JToggleButton pb = (javax.swing.JToggleButton) evt.getSource();
         boolean s = pb.getModel().isSelected();
         Window windowAncestor = SwingUtilities.getWindowAncestor(powerButton);
-        ((ProjectorControl) windowAncestor).getProjector().writePower(s);        
+        try {        
+            ((ProjectorControl) windowAncestor).getProjector().writePower(s);
+        } catch (IOException ex) {
+            Logger.getLogger(ProjectorControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_powerButtonActionPerformed
 
+    private void aspectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspectComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_aspectComboBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox aspectComboBox;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JToggleButton powerButton;
     // End of variables declaration//GEN-END:variables
 }
