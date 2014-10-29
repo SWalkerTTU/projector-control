@@ -23,47 +23,6 @@ public class Projector {
     private final int parity;
     private final int stopBits;
 
-    public SerialPort getSerialPort() {
-        return activePort;
-    }
-
-    public void setSerialPort(SerialPort ap) {
-        activePort = ap;
-    }
-
-    public boolean readPower() throws UnsupportedEncodingException,
-            IOException, InterruptedException {
-        SerialComm sc = activePort.getPort();
-        sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
-        sc.setFlowControl(flowControl);
-
-        boolean isOpen = sc.openPort();
-        sc.getOutputStream().write(Queries.POWER.getBytes("US-ASCII"));
-        synchronized (this) {
-            this.wait(100);
-        }
-        int avail = sc.getInputStream().available();
-        byte[] response = new byte[avail];
-
-        int len = sc.getInputStream().read(response, 0, response.length);
-
-        sc.closePort();
-
-        String r2 = new String(response, 0, len, "US-ASCII");
-        return "(0-1,1)".equals(r2);
-    }
-
-    public void writePower(boolean state) throws IOException {
-        SerialComm sc = activePort.getPort();
-        sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
-        sc.setFlowControl(flowControl);
-        sc.openPort();
-
-        char pwrCmd = (state) ? '1' : '0';
-        sc.getOutputStream().write(Queries.POWER.replace('?', pwrCmd).getBytes(Charset.forName("US-ASCII")));
-        sc.closePort();
-    }
-
     public Projector(ProjectorTypes pType) {
         bitRate = pType.getBitrate();
         dataBits = pType.getDataBits();
@@ -72,13 +31,29 @@ public class Projector {
         stopBits = pType.getStopBits();
     }
 
-    int readAspect() throws UnsupportedEncodingException, IOException, InterruptedException {
+    public SerialPort getSerialPort() {
+        return activePort;
+    }
+
+    public void setSerialPort(SerialPort ap) {
+        activePort = ap;
+    }
+
+    public boolean readPower() throws UnsupportedEncodingException, IOException, InterruptedException {
+        return "(0-1,1)".equals(read(Queries.POWER));
+    }
+
+    public void writePower(boolean state) throws IOException {
+        write(Queries.POWER, (state) ? "1" : "0");
+    }
+
+    private String read(String cmd) throws IOException, InterruptedException {
         SerialComm sc = activePort.getPort();
         sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
         sc.setFlowControl(flowControl);
 
         boolean isOpen = sc.openPort();
-        sc.getOutputStream().write(Queries.ASPECT.getBytes("US-ASCII"));
+        sc.getOutputStream().write(cmd.getBytes("US-ASCII"));
         synchronized (this) {
             this.wait(100);
         }
@@ -89,19 +64,27 @@ public class Projector {
 
         sc.closePort();
 
-        String r2 = new String(response, 0, len, "US-ASCII");
-
-        return Integer.parseInt(r2.substring(1, r2.length()-1).split(",")[1]);
+        return new String(response, 0, len, "US-ASCII");
     }
 
-    void writeAspect(int aspectNum) throws IOException {
-        SerialComm sc = activePort.getPort();
+    int readAspect() throws UnsupportedEncodingException, IOException, InterruptedException {
+        String r2 = read(Queries.ASPECT);
+        return Integer.parseInt(r2.substring(1, r2.length()-1).split(",")[1]);
+    }
+    
+    void writeAspect (int aspectNum) throws IOException{
+        write(Queries.ASPECT, Integer.toString(aspectNum));
+    }
+    
+    private void write(String cmd, String val) throws IOException{
+                SerialComm sc = activePort.getPort();
         sc.setComPortParameters(bitRate, dataBits, stopBits, parity);
         sc.setFlowControl(flowControl);
         sc.openPort();
-
-        sc.getOutputStream().write(Queries.ASPECT.replace('?', Integer.toString(aspectNum).charAt(0)).getBytes(Charset.forName("US-ASCII")));
-        sc.closePort();
+        String fullCmd = cmd.replace("?", val);
+        sc.getOutputStream()
+                .write(fullCmd.getBytes(Charset.forName("US-ASCII")));
+        sc.closePort();        
     }
     
 }
