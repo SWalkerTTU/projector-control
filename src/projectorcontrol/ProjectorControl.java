@@ -22,6 +22,7 @@ import javax.swing.JToggleButton;
  * @author scott.walker
  */
 public class ProjectorControl extends javax.swing.JFrame {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form ProjectorControlFrame
@@ -134,22 +135,12 @@ public class ProjectorControl extends javax.swing.JFrame {
                     }
                     
                     boolean powerOn = false;
-                    try {
-                        powerOn = proj.readPower();
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    powerOn = proj.getPower();
                     pb.setSelected(powerOn);
                     pb.getModel().setPressed(powerOn);
                     
                     int aspect = 0;
-                    try {
-                        aspect = proj.readAspect();
-                    } catch (IOException ex) {
-                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    aspect = proj.getAspect();
                     aspectBox.setSelectedIndex(aspect);
                 }
             });
