@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
+import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
@@ -118,25 +120,37 @@ public class ProjectorControl extends javax.swing.JFrame {
                     proj.setSerialPort(sp2);
 
                     Component[] panelParts = ctrlPanel.getComponents();
-                    javax.swing.JToggleButton pb = new javax.swing.JToggleButton();
+                    JToggleButton pb = null;
+                    JComboBox<String> aspectBox = null;
                     for (Component cmp : panelParts) {
-                        if (cmp instanceof javax.swing.JToggleButton
-                                && "Power".equals(((javax.swing.JToggleButton) cmp).getText())) {
+                        if (cmp instanceof JToggleButton
+                                && "Power".equals(((AbstractButton) cmp).getText())) {
                             pb = (JToggleButton) cmp;
-                            break;
+//                            break;
+                        }
+                        if (cmp instanceof javax.swing.JComboBox){
+                            aspectBox = (JComboBox<String>) cmp;
                         }
                     }
                     
                     boolean powerOn = false;
                     try {
                         powerOn = proj.readPower();
+                    } catch (IOException | InterruptedException ex) {
+                        Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    pb.setSelected(powerOn);
+                    pb.getModel().setPressed(powerOn);
+                    
+                    int aspect = 0;
+                    try {
+                        aspect = proj.readAspect();
                     } catch (IOException ex) {
                         Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(ProjectorControl.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    pb.setSelected(powerOn);
-                    pb.getModel().setPressed(powerOn);
+                    aspectBox.setSelectedIndex(aspect);
                 }
             });
             portMenu.add(jmi);

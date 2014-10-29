@@ -8,6 +8,7 @@ import java.awt.Window;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 
 /**
@@ -109,7 +110,13 @@ public class ProjectorControlPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_powerButtonActionPerformed
 
     private void aspectComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aspectComboBoxActionPerformed
-        // TODO add your handling code here:
+        int aspectNum = ((JComboBox) evt.getSource()).getSelectedIndex();
+        Window windowAncestor = SwingUtilities.getWindowAncestor(aspectComboBox);
+        try {
+            ((ProjectorControl) windowAncestor).getProjector().writeAspect(aspectNum);
+        } catch (IOException ex) {
+            Logger.getLogger(ProjectorControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_aspectComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
